@@ -8,9 +8,19 @@
 
 3. If we could determine $T^∗(state)$ for each state, the optimal action that the sheepdog should take is the action that minimizes $T^∗(state)$.
 
-4. 
+4. **This number should be calculated and could be found in the hashmap.**
+
+5. Intuitively, the sheep dog should start at (15, 16) due to symmetry. By calculation, the sheep dog should start at the position where its expected steps to catch the sheep is the smallest. The sheep dog should start at (15, 16) because the expected steps to catch the sheep is **remained to be filled**, which is the smallest among all the positions.
+
+6. 
 
 ## Sheepdog Bot 2
+1. The input states can be represented as a 4-dimention interger array, where the first two elements are the coordinates of the sheep, and the last two elements are the coordinates of the sheepdog. I would like to use linear regression as the model. Input features like the relative state to the target should be useful. I would like to use MAE (mean absolute error) as the loss. The training algorithm should be gradient descent. Since we only need to know a subset of exact {T^\*}, our model is much less than the size of the fully computed T^\*. For instance, if we only use the center 16\*16 grid, the size of the model is 16\*16\*16\*16=65536, which is much less than 31\*31\*31\*31=923521. 
+
+2. I can compare the predicted value of the model with the exact value of T^\* using MAE error. Overfitting could be a problem so I can use regularization to prevent overfitting. For example, I can use L1 regularization, which adds a penalty term to the loss function, to prevent the model from overfitting.
+
+3. still in progress.
+
 
 ## Sheepdog Bot 3
 
