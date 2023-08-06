@@ -8,7 +8,11 @@
 
 3. If we could determine $T^∗(state)$ for each state, the optimal action that the sheepdog should take is the action that minimizes $T^∗(state)$.
 
-4. 
+4. **This number should be calculated and could be found in the hashmap.**
+
+5. Intuitively, the sheep dog should start at (15, 16) due to symmetry. By calculation, the sheep dog should start at the position where its expected steps to catch the sheep is the smallest. The sheep dog should start at (15, 16) because the expected steps to catch the sheep is **remained to be filled**, which is the smallest among all the positions.
+
+6. 
 
 ## Sheepdog Bot 2
 
