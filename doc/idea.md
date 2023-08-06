@@ -15,6 +15,12 @@
 6. 
 
 ## Sheepdog Bot 2
+1. The input states can be represented as a 4-dimention interger array, where the first two elements are the coordinates of the sheep, and the last two elements are the coordinates of the sheepdog. I would like to use linear regression as the model. Input features like the relative state to the target should be useful. I would like to use MAE (mean absolute error) as the loss. The training algorithm should be gradient descent. Since we only need to know a subset of exact {T^\*}, our model is much less than the size of the fully computed T^\*. For instance, if we only use the center 16\*16 grid, the size of the model is 16\*16\*16\*16=65536, which is much less than 31\*31\*31\*31=923521. 
+
+2. I can compare the predicted value of the model with the exact value of T^\* using MAE error. Overfitting could be a problem so I can use regularization to prevent overfitting. For example, I can use L1 regularization, which adds a penalty term to the loss function, to prevent the model from overfitting.
+
+3. still in progress.
+
 
 ## Sheepdog Bot 3
 
