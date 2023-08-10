@@ -35,3 +35,7 @@ This bot utilizes the idea of machine learning. Since we have created and stored
 2.  To assess whether the model suffers from overfitting, we can use cross-validation. In particular, we can use k-fold cross-validation, where we split the data into k subsets, and use one subset as the testing set and the rest as the training set. We can repeat this process k times, and then average the results to get a more accurate estimate of the model's performance. Overfitting of course is an issue, but we can use regularization to prevent overfitting. For example, we can use the L2 regularization, which adds a penalty term to the loss function, to prevent the model from overfitting.
 
 3.  Still in progress, should wait for the simulation results.
+
+Boshen Xie: part of bot1 and bot2
+Sijun Li: part of bot1 and bot 2
+Zeyu Shen: bot3
