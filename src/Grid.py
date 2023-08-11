@@ -1,99 +1,117 @@
-def valueIteration(grid, sheep, bot):
-		print("Start Value Iteration")
-		prev = estimatedTvalues(grid)
-		print("Done loading Estimated values")
-		curr = {}
-
-		beta = 0.98
-		convergence = False
-		smallval = 0.01
-		while not convergence:
-			count = 1
-			max = -100
-			for keys in prev.keys():
-				print(count, "/", len(prev.keys()))
-				s = keys[0]
-				sheep.row = s.x
-				sheep.col = s.y
-				b = keys[1]
-				bot.row = b.x
-				bot.col = b.y
-
-				if sheep.row == bot.row and sheep.col == bot.col:
-					curr[keys] = float('inf')
-					continue
-				elif sheep.row == 15 and sheep.col == 15 and not (bot.row == 15 and bot.col == 15):
-					curr[keys] = 0.0
-					continue
-				initial = (s, b)
-				finalmin = prev[initial]
-				getBotNeighbors(grid, bot)
-				getSheepNeighbors(grid, sheep)
-				if sheep.view.contains(bot):
-					modSheepNeighbors(grid, sheep, bot)
-				for bot_neighbor in bot.neighbors:
-					reward = -1
-					val = 0
-					sum = 0
-					prob = 1 / len(sheep.neighbors)
-					for sheep_neighbor in sheep.neighbors:
-						p1 = Point(sheep_neighbor.row, sheep_neighbor.col)
-						p2 = Point(bot_neighbor.row, bot_neighbor.col)
-						entry = (p1, p2)
-						sum += prev[entry] * prob
-					val = reward + (beta * sum)
-					if val < finalmin:
-						finalmin = val
-						x = bot_neighbor.row
-						y = bot_neighbor.col
-				curr[initial] = finalmin
-				if abs(curr[initial] - prev[initial]) > max:
-					max = abs(curr[initial] - prev[initial])
-			if max < smallval:
-				convergence = True
-			prev = curr.copy()
-			curr.clear()
-		print("End Value Iteration")
-		
-def modSheepNeighbors(grid, sheep, bot):
-		mindist = float('inf')
-		for neighbor in sheep.neighbors:
-			val = abs(bot.row - neighbor.row) + abs(bot.col - neighbor.col)
-			if val < mindist:
-				sheep.neighbors.clear()
-				sheep.neighbors.add(neighbor)
-				mindist = val
-			elif val == mindist:
-				sheep.neighbors.add(neighbor)
-				
-def estimatedTvalues(grid):
-		prev = {}
-		for i in range(31):
-			for j in range(31):
-				for m in range(31):
-					for n in range(31):
-						# sheep position
-						p1 = (i, j)
-						# bot position
-						p2 = (m, n)
-						key = (p1, p2)
-						# goal states
-						if (p1 == (15, 15)) and (p2 != (15, 15)):
-							prev[key] = 0.0
-						elif p1 == p2:  # sheep and bot are at the same positon
-							prev[key] = float('inf')
-						else:
-							estimate = abs(p2[1] - p1[1]) + abs(p2[0] - p1[0]) + abs(p1[0] - 15) + abs(p1[1] - 15) + 2
-							prev[key] = estimate
-		return prev
-
+from Sheep import Sheep, Node, Point, Key
 import random
+import os
+
+
+# start from here by Boshen Xie and Sijun Li
+def valueIteration(grid, sheep, bot):
+    print("Start Value Iteration")
+    prev = estimatedTvalues(grid)
+    print("Done loading Estimated values")
+    curr = {}
+
+    beta = 0.97
+    convergence = False
+    smallval = 0.01
+    while not convergence:
+        count = 1
+        max = -100
+        for keys in prev.keys():
+            print(count, "/", len(prev.keys()))
+            s = keys[0]
+            sheep.row = s.x
+            sheep.col = s.y
+            b = keys[1]
+            bot.row = b.x
+            bot.col = b.y
+
+            if sheep.row == bot.row and sheep.col == bot.col:
+                curr[keys] = float("inf")
+                continue
+            elif (
+                sheep.row == 15
+                and sheep.col == 15
+                and not (bot.row == 15 and bot.col == 15)
+            ):
+                curr[keys] = 0.0
+                continue
+            initial = (s, b)
+            finalmin = prev[initial]
+            getBotNeighbors(grid, bot)
+            getSheepNeighbors(grid, sheep)
+            if sheep.view.contains(bot):
+                modSheepNeighbors(grid, sheep, bot)
+            for bot_neighbor in bot.neighbors:
+                reward = -1
+                val = 0
+                sum = 0
+                prob = 1 / len(sheep.neighbors)
+                for sheep_neighbor in sheep.neighbors:
+                    p1 = Point(sheep_neighbor.row, sheep_neighbor.col)
+                    p2 = Point(bot_neighbor.row, bot_neighbor.col)
+                    entry = (p1, p2)
+                    sum += prev[entry] * prob
+                val = reward + (beta * sum)
+                if val < finalmin:
+                    finalmin = val
+                    x = bot_neighbor.row
+                    y = bot_neighbor.col
+            curr[initial] = finalmin
+            if abs(curr[initial] - prev[initial]) > max:
+                max = abs(curr[initial] - prev[initial])
+        if max < smallval:
+            convergence = True
+        prev = curr.copy()
+        curr.clear()
+    print("End Value Iteration")
+
+
+def modSheepNeighbors(grid, sheep, bot):
+    mindist = float("inf")
+    for neighbor in sheep.neighbors:
+        val = abs(bot.row - neighbor.row) + abs(bot.col - neighbor.col)
+        if val < mindist:
+            sheep.neighbors.clear()
+            sheep.neighbors.add(neighbor)
+            mindist = val
+        elif val == mindist:
+            sheep.neighbors.add(neighbor)
+
+
+def estimatedTvalues(grid):
+    prev = {}
+    for i in range(31):
+        for j in range(31):
+            for m in range(31):
+                for n in range(31):
+                    # sheep position
+                    p1 = (i, j)
+                    # bot position
+                    p2 = (m, n)
+                    key = (p1, p2)
+                    # goal states
+                    if (p1 == (15, 15)) and (p2 != (15, 15)):
+                        prev[key] = 0.0
+                    elif p1 == p2:  # sheep and bot are at the same positon
+                        prev[key] = float("inf")
+                    else:
+                        estimate = (
+                            abs(p2[1] - p1[1])
+                            + abs(p2[0] - p1[0])
+                            + abs(p1[0] - 15)
+                            + abs(p1[1] - 15)
+                            + 2
+                        )
+                        prev[key] = estimate
+    return prev
+
 
 # generate the grid
 def generate_Grid():
     grid = [[Node(i, j) for j in range(31)] for i in range(31)]
     populate_Grid(grid)
     return grid
+
 
 # populate the grid with Node objects that contain row and col vals
 def populate_Grid(grid):
@@ -108,6 +126,7 @@ def populate_Grid(grid):
     grid[16][14].blocked = True
     grid[16][15].blocked = True
     grid[16][16].blocked = True
+
 
 def trapSheep(grid, sheep, bot):
     print("Loading Policy... ")
@@ -136,29 +155,29 @@ def trapSheep(grid, sheep, bot):
         bot.col = next.col
         sheepMove(grid, sheep, bot)
         print(
-            "step: " +
-            str(steps) +
-            " botrow: " +
-            str(bot.row) +
-            " botcol: " +
-            str(bot.col) +
-            " sheeprow: " +
-            str(sheep.row) +
-            " sheepcol " +
-            str(sheep.col)
+            "step: "
+            + str(steps)
+            + " botrow: "
+            + str(bot.row)
+            + " botcol: "
+            + str(bot.col)
+            + " sheeprow: "
+            + str(sheep.row)
+            + " sheepcol "
+            + str(sheep.col)
         )
         # if sheeplocation == botlocation the bot is considered crushed
         if sheep.row == bot.row and sheep.col == bot.col:
             print("Robot Crushed!")
             print(
-                "startbotrow: " +
-                str(startbotrow) +
-                " startcolrow: " +
-                str(startbotcol) +
-                " startsheeprow: " +
-                str(startsheeprow) +
-                " startsheepcol " +
-                str(startsheepcol)
+                "startbotrow: "
+                + str(startbotrow)
+                + " startcolrow: "
+                + str(startbotcol)
+                + " startsheeprow: "
+                + str(startsheeprow)
+                + " startsheepcol "
+                + str(startsheepcol)
             )
             return
         # if the sheep row and col is at pos(15, 15) we have successfully trapped the
@@ -166,37 +185,41 @@ def trapSheep(grid, sheep, bot):
         if sheep.row == 15 and sheep.col == 15:
             print("Successfully trapped sheep!")
             print(
-                "startbotrow: " +
-                str(startbotrow) +
-                " startcolrow: " +
-                str(startbotcol) +
-                " startsheeprow: " +
-                str(startsheeprow) +
-                " startsheepcol " +
-                str(startsheepcol)
+                "startbotrow: "
+                + str(startbotrow)
+                + " startcolrow: "
+                + str(startbotcol)
+                + " startsheeprow: "
+                + str(startsheeprow)
+                + " startsheepcol "
+                + str(startsheepcol)
             )
-            
+
+
+# start from here by Sijun Li and Zeyu Shen
 def generateSheepPosition(grid, sheep):
-		rand = random.Random()
-		row = rand.randint(0, 30)
-		col = rand.randint(0, 30)
-		while grid[row][col].blocked:
-			row = rand.randint(0, 30)
-			col = rand.randint(0, 30)
-		sheep.row = row
-		sheep.col = col
-		grid[row][col] = sheep
-		
+    rand = random.Random()
+    row = rand.randint(0, 30)
+    col = rand.randint(0, 30)
+    while grid[row][col].blocked:
+        row = rand.randint(0, 30)
+        col = rand.randint(0, 30)
+    sheep.row = row
+    sheep.col = col
+    grid[row][col] = sheep
+
+
 def generateSheepdogPosition(grid, bot):
-		rand = random.Random()
-		row = rand.randint(0, 30)
-		col = rand.randint(0, 30)
-		while grid[row][col].blocked or isinstance(grid[row][col], AngrySheep):
-			row = rand.randint(0, 30)
-			col = rand.randint(0, 30)
-		bot.row = row
-		bot.col = col
-		grid[row][col] = bot
+    rand = random.Random()
+    row = rand.randint(0, 30)
+    col = rand.randint(0, 30)
+    while grid[row][col].blocked or isinstance(grid[row][col], Sheep):
+        row = rand.randint(0, 30)
+        col = rand.randint(0, 30)
+    bot.row = row
+    bot.col = col
+    grid[row][col] = bot
+
 
 def getSheepNeighbors(grid, sheep):
     if sheep.neighbors:
@@ -214,6 +237,7 @@ def getSheepNeighbors(grid, sheep):
         sheep.neighbors.append(grid[row][col - 1])
     if col + 1 <= 30:
         sheep.neighbors.append(grid[row][col + 1])
+
 
 def generateSheepView(grid, sheep):
     vrow = sheep.row - 2
@@ -235,7 +259,8 @@ def generateSheepView(grid, sheep):
             vcol += 1
         vcol = sheep.col - 2
         vrow += 1
-	
+
+
 def getBotNeighbors(grid, bot):
     if not bot.neighbors:
         bot.neighbors.clear()
@@ -261,6 +286,7 @@ def getBotNeighbors(grid, bot):
     if row + 1 <= 30 and col - 1 >= 0 and not grid[row + 1][col - 1].blocked:
         bot.neighbors.append(grid[row + 1][col - 1])
 
+
 def sheepMove(grid, sheep, bot):
     move = None
     attack = []
@@ -271,7 +297,7 @@ def sheepMove(grid, sheep, bot):
     # if the bot is in the sheep's view the sheep will take the move to reduce its
     # distance to the bot
     if bot in sheep.view:
-        mindist = float('inf')
+        mindist = float("inf")
         for neighbor in sheep.neighbors:
             val = abs(bot.row - neighbor.row) + abs(bot.col - neighbor.col)
             if val < mindist:
@@ -292,17 +318,17 @@ def sheepMove(grid, sheep, bot):
             sheep.row = move.row
             sheep.col = move.col
 
-import os
 
 def method1(map):
     try:
-        with open("initial.txt", "w") as fileTwo:
+        with open("data.txt", "w") as fileTwo:
             for key, value in map.items():
                 x1, y1 = key.key1.x, key.key1.y
                 x2, y2 = key.key2.x, key.key2.y
                 fileTwo.write(f"{x1} {y1} {x2} {y2} {value}\n")
     except Exception as e:
         pass
+
 
 def write_policy(map):
     try:
@@ -314,10 +340,11 @@ def write_policy(map):
                 f.write(f"{x1} {y1} {x2} {y2} {bot_row} {bot_col}\n")
     except Exception as e:
         pass
-                
+
+
 def loadinitialestimates():
     try:
-        toRead = open("initial.txt", "r")
+        toRead = open("data.txt", "r")
         mapInFile = {}
 
         for currentLine in toRead:
@@ -337,6 +364,7 @@ def loadinitialestimates():
     except Exception as e:
         pass
     return None
+
 
 def loadPolicy(grid):
     try:

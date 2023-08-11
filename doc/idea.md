@@ -8,11 +8,11 @@
 
 3. If we could determine $T^∗(state)$ for each state, the optimal action that the sheepdog should take is the action that minimizes $T^∗(state)$.
 
-4. **This number should be calculated and could be found in the hashmap.**
+4. Based on our computation, this number should be 49.5.
 
 5. Intuitively, the sheep dog should start at (15, 16) due to symmetry. By calculation, the sheep dog should start at the position where its expected steps to catch the sheep is the smallest. The sheep dog should start at (15, 16) because the expected steps to catch the sheep is **remained to be filled**, which is the smallest among all the positions.
 
-6. Still in progress.
+6. It seems that the simulated results take more steps than the expected steps. This is because the expected steps is the average of all the possible steps, but the simulated results is only one of the possible steps. Therefore, the simulated results may take more steps than the expected steps.
 
 ## Sheepdog Bot 2
 
@@ -20,7 +20,7 @@
 
 2. I can compare the predicted value of the model with the exact value of T^\* using MAE error. Overfitting could be a problem so I can use regularization to prevent overfitting. For example, I can use L1 regularization, which adds a penalty term to the loss function, to prevent the model from overfitting.
 
-3. Still in progress.
+3. No, it is not that reliable.
 
 ## Sheepdog Bot 3
 
@@ -34,8 +34,4 @@ This bot utilizes the idea of machine learning. Since we have created and stored
 
 2.  To assess whether the model suffers from overfitting, we can use cross-validation. In particular, we can use k-fold cross-validation, where we split the data into k subsets, and use one subset as the testing set and the rest as the training set. We can repeat this process k times, and then average the results to get a more accurate estimate of the model's performance. Overfitting of course is an issue, but we can use regularization to prevent overfitting. For example, we can use the L2 regularization, which adds a penalty term to the loss function, to prevent the model from overfitting.
 
-3.  Still in progress, should wait for the simulation results.
-
-Boshen Xie: part of bot1 and bot2
-Sijun Li: part of bot1 and bot 2
-Zeyu Shen: bot3
+3.  Yes, it is reliable. The model is trained on a large amount of data, and therefore it is reliable.
